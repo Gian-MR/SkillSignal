@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Gian-MR/SkillSignal#readme",
   "dependencies": {
     "@base-ui/react": "^1.5.0",
+    "@prisma/client": "^7.8.0",
     "@tailwindcss/postcss": "^4.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -40,6 +41,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.6",
+    "prisma": "^7.8.0",
     "typescript": "^6.0.3"
   },
   "overrides": {
