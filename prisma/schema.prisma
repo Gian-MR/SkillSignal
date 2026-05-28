@@ -1,8 +1,91 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userSkills  UserSkill[]
+  jobPostings JobPosting[]
+  roadmaps    Roadmap[]
+}
+
+model JobPosting {
+  id          String   @id @default(cuid())
+  userId      String?
+  title       String
+  company     String?
+  location    String?
+  sourceUrl   String?
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  jobSkills JobSkill[]
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userSkills UserSkill[]
+  jobSkills  JobSkill[]
+}
+
+model UserSkill {
+  id        String     @id @default(cuid())
+  userId    String
+  skillId   String
+  level     SkillLevel
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+}
+
+model JobSkill {
+  id           String   @id @default(cuid())
+  jobPostingId String
+  skillId      String
+  confidence   Float?
+  createdAt    DateTime @default(now())
+
+  jobPosting JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  skill      Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([jobPostingId, skillId])
+}
+
+model Roadmap {
+  id         String   @id @default(cuid())
+  userId     String
+  targetRole String
+  content    Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum SkillLevel {
+  beginner
+  intermediate
+  advanced
 }
