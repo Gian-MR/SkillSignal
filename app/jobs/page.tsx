@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { FilePlus2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 
 const jobs = [
@@ -15,9 +17,15 @@ export default function JobsPage() {
       title="Track the roles shaping your roadmap"
     >
       <section className="route-card">
-        <div className="card-heading">
-          <span className="mini-label">Saved roles</span>
-          <h2>Early matches</h2>
+        <div className="card-heading with-action">
+          <div>
+            <span className="mini-label">Saved roles</span>
+            <h2>Early matches</h2>
+          </div>
+          <Link className="card-action" href="/jobs/new">
+            <FilePlus2 aria-hidden="true" />
+            Add posting
+          </Link>
         </div>
         <div className="job-list">
           {jobs.map((job) => (

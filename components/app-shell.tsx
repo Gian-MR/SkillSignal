@@ -6,6 +6,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
   BriefcaseBusiness,
+  FilePlus2,
   GraduationCap,
   Home,
   LayoutDashboard,
@@ -14,12 +15,20 @@ import {
   UserRound,
 } from "lucide-react";
 
-export type AppPage = "Home" | "Dashboard" | "Jobs" | "Roadmap" | "Projects" | "Profile";
+export type AppPage =
+  | "Home"
+  | "Dashboard"
+  | "Jobs"
+  | "Add Job"
+  | "Roadmap"
+  | "Projects"
+  | "Profile";
 
 const navItems: { label: AppPage; href: string; icon: LucideIcon }[] = [
   { label: "Home", href: "/", icon: Home },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Jobs", href: "/jobs", icon: BriefcaseBusiness },
+  { label: "Add Job", href: "/jobs/new", icon: FilePlus2 },
   { label: "Roadmap", href: "/roadmap", icon: BookOpenCheck },
   { label: "Projects", href: "/projects", icon: GraduationCap },
   { label: "Profile", href: "/profile", icon: UserRound },
