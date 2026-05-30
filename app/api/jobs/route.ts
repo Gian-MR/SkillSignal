@@ -68,15 +68,22 @@ export async function POST(request: Request) {
     );
   }
 
-  const job = await prisma.jobPosting.create({
-    data: {
-      title: getTitle(payload),
-      company: cleanOptional(payload.company),
-      location: cleanOptional(payload.location),
-      sourceUrl: cleanOptional(payload.sourceUrl),
-      description,
-    },
-  });
+  try {
+    const job = await prisma.jobPosting.create({
+      data: {
+        title: getTitle(payload),
+        company: cleanOptional(payload.company),
+        location: cleanOptional(payload.location),
+        sourceUrl: cleanOptional(payload.sourceUrl),
+        description,
+      },
+    });
 
-  return NextResponse.json({ job }, { status: 201 });
+    return NextResponse.json({ job }, { status: 201 });
+  } catch {
+    return NextResponse.json(
+      { error: "Could not save this job posting. Please try again." },
+      { status: 500 },
+    );
+  }
 }

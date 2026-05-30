@@ -751,7 +751,7 @@ a {
   padding: 0 9px;
 }
 
-.job-list article div,
+.job-list article > div:first-child,
 .timeline-list article div {
   display: grid;
   gap: 4px;
@@ -759,17 +759,76 @@ a {
 }
 
 .job-list span,
+.job-list small,
 .timeline-list small {
   color: #64748b;
   font-size: 0.9rem;
   font-weight: 700;
 }
 
-.job-list b {
+.job-list small {
+  color: #4f46e5;
+}
+
+.job-actions {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.job-list b,
+.job-actions a {
   background: #d1fae5;
   border-radius: 8px;
   color: #047857;
   padding: 7px 9px;
+}
+
+.job-actions a {
+  background: #eef2ff;
+  color: #4338ca;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 900;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.job-actions a:hover,
+.job-actions a:focus-visible {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.empty-state {
+  align-items: center;
+  background: #ffffff;
+  border: 1px dashed #c7d2fe;
+  border-radius: 8px;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.empty-state div {
+  display: grid;
+  gap: 5px;
+}
+
+.empty-state strong {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+}
+
+.empty-state span {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.jobs-summary {
+  margin-top: 18px;
 }
 
 .project-card {
@@ -950,6 +1009,11 @@ a {
   box-shadow: 0 12px 28px rgba(16, 185, 129, 0.2);
 }
 
+.analyze-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .utility-button,
 .icon-utility {
   background: #ffffff;
@@ -989,6 +1053,26 @@ a {
   font-size: 0.92rem;
   font-weight: 800;
   margin: 0;
+}
+
+.form-message {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  font-weight: 800;
+  gap: 9px;
+  padding: 12px;
+}
+
+.form-message svg {
+  height: 18px;
+  width: 18px;
+}
+
+.form-message.error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
 }
 
 .job-insight-card {
@@ -1061,6 +1145,15 @@ a {
   color: #475569;
   font-size: 0.9rem;
   line-height: 1.45;
+}
+
+.analysis-preview.error {
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+
+.analysis-preview.error strong {
+  color: #be123c;
 }
 
 @keyframes spin {
@@ -1526,6 +1619,17 @@ button:focus-visible {
   .card-heading.with-action {
     align-items: start;
     flex-direction: column;
+  }
+
+  .job-list article,
+  .empty-state {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .job-actions {
+    align-items: start;
+    justify-items: start;
   }
 }
 

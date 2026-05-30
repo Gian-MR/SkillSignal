@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import {
+  AlertCircle,
   BriefcaseBusiness,
   Building2,
   CheckCircle2,
@@ -14,6 +15,8 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
+
+type SubmitStatus = "idle" | "ready" | "analyzing" | "error";
 
 const exampleDescription = `Frontend Developer Intern
 
@@ -37,7 +40,9 @@ export function JobPostingForm() {
   const [location, setLocation] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<"idle" | "ready" | "analyzing">("idle");
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [savedJobTitle, setSavedJobTitle] = useState("");
 
   const wordCount = description.trim().split(/\s+/).filter(Boolean).length;
   const hasEnoughDetail = wordCount >= 60;
@@ -51,6 +56,8 @@ export function JobPostingForm() {
     setSourceUrl("https://example.com/frontend-intern");
     setDescription(exampleDescription);
     setStatus("idle");
+    setErrorMessage("");
+    setSavedJobTitle("");
   }
 
   function resetForm() {
@@ -60,6 +67,8 @@ export function JobPostingForm() {
     setSourceUrl("");
     setDescription("");
     setStatus("idle");
+    setErrorMessage("");
+    setSavedJobTitle("");
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -72,19 +81,44 @@ export function JobPostingForm() {
     const text = await file.text();
     setDescription(text);
     setStatus("idle");
+    setErrorMessage("");
+    setSavedJobTitle("");
     event.target.value = "";
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!description.trim()) {
-      setStatus("idle");
+      setErrorMessage("Paste a job description before analyzing.");
+      setStatus("error");
       return;
     }
 
     setStatus("analyzing");
-    window.setTimeout(() => setStatus("ready"), 650);
+    setErrorMessage("");
+    setSavedJobTitle("");
+
+    try {
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, company, location, sourceUrl, description }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(result.error || "Something went wrong while saving this job.");
+        setStatus("error");
+        return;
+      }
+
+      setSavedJobTitle(result.job?.title || title || "Job posting");
+      setStatus("ready");
+    } catch {
+      setErrorMessage("Could not reach the jobs API. Check the dev server and try again.");
+      setStatus("error");
+    }
   }
 
   return (
@@ -155,6 +189,8 @@ export function JobPostingForm() {
             onChange={(event) => {
               setDescription(event.target.value);
               setStatus("idle");
+              setErrorMessage("");
+              setSavedJobTitle("");
             }}
             placeholder="Paste the full job description here..."
             required
@@ -164,7 +200,7 @@ export function JobPostingForm() {
 
         <div className="form-footer">
           <div className="form-actions">
-            <button className="analyze-button" type="submit">
+            <button className="analyze-button" disabled={status === "analyzing"} type="submit">
               {status === "analyzing" ? (
                 <LoaderCircle aria-hidden="true" className="spin-icon" />
               ) : (
@@ -197,6 +233,12 @@ export function JobPostingForm() {
           />
           <p className="form-count">{wordCount} words</p>
         </div>
+        {status === "error" ? (
+          <div className="form-message error" role="alert">
+            <AlertCircle aria-hidden="true" />
+            <span>{errorMessage}</span>
+          </div>
+        ) : null}
       </section>
 
       <aside className="job-insight-card" aria-label="Job posting quality">
@@ -222,8 +264,14 @@ export function JobPostingForm() {
         </div>
         {status === "ready" ? (
           <div className="analysis-preview">
-            <strong>Ready for backend</strong>
-            <span>This form can now connect to `/api/jobs` when the API is added.</span>
+            <strong>Job saved</strong>
+            <span>{savedJobTitle} was saved to the database and is ready for skill extraction.</span>
+          </div>
+        ) : null}
+        {status === "error" ? (
+          <div className="analysis-preview error">
+            <strong>Save failed</strong>
+            <span>{errorMessage}</span>
           </div>
         ) : null}
       </aside>
