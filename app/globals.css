@@ -785,12 +785,16 @@ a {
   padding: 7px 9px;
 }
 
-.job-actions a {
+.job-actions a,
+.delete-job-button {
   background: #eef2ff;
+  border: 0;
+  border-radius: 8px;
   color: #4338ca;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 900;
+  padding: 7px 9px;
   transition: background-color 180ms ease, color 180ms ease;
 }
 
@@ -798,6 +802,30 @@ a {
 .job-actions a:focus-visible {
   background: #e0e7ff;
   color: #3730a3;
+}
+
+.delete-job-button {
+  align-items: center;
+  background: #fff1f2;
+  color: #be123c;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.delete-job-button:hover,
+.delete-job-button:focus-visible {
+  background: #ffe4e6;
+  color: #9f1239;
+}
+
+.delete-job-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.delete-job-button svg {
+  height: 15px;
+  width: 15px;
 }
 
 .empty-state {

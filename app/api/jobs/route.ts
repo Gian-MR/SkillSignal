@@ -48,6 +48,33 @@ export async function GET() {
   return NextResponse.json({ jobs });
 }
 
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Job posting id is required." },
+      { status: 400 },
+    );
+  }
+
+  try {
+    await prisma.jobPosting.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Failed to delete job posting", error);
+
+    return NextResponse.json(
+      { error: "Could not delete this job posting. Please try again." },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: Request) {
   let payload: JobPayload;
 

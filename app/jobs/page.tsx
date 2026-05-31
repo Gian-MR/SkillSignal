@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FilePlus2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { JobDeleteButton } from "@/components/job-delete-button";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -68,6 +69,7 @@ export default async function JobsPage() {
                         Source
                       </a>
                     ) : null}
+                    <JobDeleteButton jobId={job.id} jobTitle={job.title} />
                   </div>
                 </article>
               );
