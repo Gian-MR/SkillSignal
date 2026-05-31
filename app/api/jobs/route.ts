@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { extractSkillsFromJobDescription } from "@/lib/skill-extractor";
 
 type JobPayload = {
   title?: unknown;
@@ -69,6 +70,8 @@ export async function POST(request: Request) {
   }
 
   try {
+    const extractedSkills = await extractSkillsFromJobDescription(description);
+
     const job = await prisma.jobPosting.create({
       data: {
         title: getTitle(payload),
@@ -76,11 +79,36 @@ export async function POST(request: Request) {
         location: cleanOptional(payload.location),
         sourceUrl: cleanOptional(payload.sourceUrl),
         description,
+        jobSkills: extractedSkills.length
+          ? {
+              create: extractedSkills.map((extractedSkill) => ({
+                confidence: extractedSkill.confidence,
+                skill: {
+                  connectOrCreate: {
+                    where: { name: extractedSkill.name },
+                    create: {
+                      name: extractedSkill.name,
+                      category: extractedSkill.category,
+                    },
+                  },
+                },
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        jobSkills: {
+          include: {
+            skill: true,
+          },
+        },
       },
     });
 
     return NextResponse.json({ job }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Failed to save and analyze job posting", error);
+
     return NextResponse.json(
       { error: "Could not save this job posting. Please try again." },
       { status: 500 },
